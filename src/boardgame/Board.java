@@ -46,7 +46,7 @@ public class Board {
 	}
 	
 	
-	public void placePiece(Piece piece, Position position) { //método resposável por colocar a peça de Xadrez no devido lugar selecionado. O método está recebendo(nos seus argumentos), uma pela e uma posição
+	public void placePiece(Piece piece, Position position) { //método resposável por colocar a peça de Xadrez no devido lugar selecionado. O método está recebendo(nos seus argumentos), uma peça e uma posição
 		/*Programação defensiva*/
 		if(thereIsAPiece(position)) { //se existe uma peça nessa posição, não posso colocar uma nova peça lá
 			throw new BoardException("There is already a piece on position " + position); //"Já existe uma peça em posição"//
