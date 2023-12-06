@@ -55,7 +55,19 @@ public class Board {
 		piece.position = position;//no caso, tenho que informar que a peça existe, ou seja, não está em uma posição nula. Então, graças a visibilidade 'protected' do atributo 'position' da classe Piece, posso atribuir a sua posição a posição informada nesse método através do argumento 'position' dentro desse escopo
 	}
 	
-	
+	public Piece removePiece(Position position) { //remover uma peça
+		/*Programação defensiva*/
+		if(!positionExists(position)) { //caso a posição não exista
+			throw new BoardException("Position not on the board");
+		}
+		if(piece(position) == null) { //se uma peça na posição não existir, irá retornar uma posição vazia
+			return null;
+		}
+		Piece aux = piece(position); //para remover a peça do tabuleiro, eu pego a peça e atribuo a ela a posição
+		aux.position = null; //após isso, eu deixo o valor dela como nulo, indicando que essa peça não exite mais
+		pieces[position.getRow()][position.getColumn()] = null; //vai entrar na matriz das posições das peças e vai indicar na posição dada que não existe mais peça ali
+		return aux; //vai retornar a peça que foi retirada
+	}
 	
 	private boolean positionExists(int row, int column) { //a criação desse método se deve ao fato de que em dado momento, será mais simples testar a posição pela linha e pela coluna do que propriamente pela posição
 		return row >= 0 && row < rows && column >= 0 && column < columns; //a posição existe ("positionExists") quando ela está dentro do tabuleiro, ou seja, quando a linha e a coluna são maiores ou iguais a zero e quando a linha é menor que a altura do tabuleiro ("rows") e quanto a coluna é menor que a quantidade de colunas do tabuleiro ("columns")
