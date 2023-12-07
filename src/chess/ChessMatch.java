@@ -31,6 +31,7 @@ public class ChessMatch {
 		Position source = sourcePosition.toPosition(); //vai converter para posição de matriz a posição original e a de destino
 		Position target = targetPosition.toPosition();
 		validateSourcePosition(source);//operação responsável por verificar se existe a posição de origem, caso não exista, lançará uma excessão
+		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);//
 		return (ChessPiece) capturedPiece; //o DownCasting foi feito pois a capturedPiece era do tipo Piece 
 	}
@@ -49,6 +50,12 @@ public class ChessMatch {
 		}
 		if(!board.piece(position).isThereAnyPossibleMove()) { //se não tiver nenhum movimento possível
 			throw new ChessException("There is no possible moves for the chosen piece"); //não existe movimento possíveis para a peça escolhida
+		}
+	}
+	
+	private void validateTargetPosition(Position source,Position target){
+		if(!board.piece(source).possibleMove(target)) { //se pra peça de origem, a posição de destino não é um movimento possível
+			throw new ChessException("The chosen piece can't move to target position"); //a peça escolhida não pode se mover pra posição de destino
 		}
 	}
 	
