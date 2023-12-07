@@ -24,6 +24,12 @@ public class ChessMatch {
 		}
 		return mat;
 	}
+	//esse método serve para que no programa principal, eu possa imprimir as posições possíveis a partir de uma posição de origem
+	public boolean[][] possibleMoves(ChessPosition sourcePosition){ //operação de movimentos possíveis que retorna um booleano com as posições liberadas para que a minha aplicação possa colorir o fundo das posições possíveis de movimentação
+		Position position = sourcePosition.toPosition(); //converte a posição de xadrez para uma posição normal
+		validateSourcePosition(position);
+		return board.piece(position).possibleMoves();// vou retornar as posições possíveis
+	}
 	
 	//método que moverá uma peça e se for o caso, capturará a peça inimiga
 	                                              /*posição de origem*/         /*posição de destino*/

@@ -59,17 +59,34 @@ public class UI {
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.print((8 - i) + " ");
 			for (int j = 0; j < pieces.length; j++) {
-				printPiece(pieces[i][j]);
+				printPiece(pieces[i][j], false); //aqui há o 'false' pois estou indicando para o argumento de background que nenhuma peça inicialmente é pra ter cor de fundo
 			}
 			System.out.println(); /* após imprimir todas as peças/tabuleiro em uma linha, haverá uma quebra de
 								 linha e começara a imprimir a próxima.*/
 		}
 		System.out.println("  a b c d e f g h");
 	}
+	
+	public static void printBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) { 
+		for (int i = 0; i < pieces.length; i++) {
+			System.out.print((8 - i) + " ");
+			for (int j = 0; j < pieces.length; j++) {
+				printPiece(pieces[i][j], possibleMoves[i][j]); //dependendo da variável do possibleMoves[i][j] eu irei colorir o fundo com as posições possíveis de movimentação
+			}
+			System.out.println(); 
+		}
+		System.out.println("  a b c d e f g h");
+	}
 
-	private static void printPiece(ChessPiece piece) { // método auxiliar para imprimir uma peça.
+
+	private static void printPiece(ChessPiece piece, boolean background) { // método auxiliar para imprimir uma peça.
+		if(background == true) { //irá conferir se eu devo ou não colorir o fundo da minha peça
+			System.out.print(ANSI_BLUE_BACKGROUND);
+		}
+		
+		//é necessário ter o ANSI_RESET para que a cor somente apareça no lugar desejado e não no tabuleiro todo, ele limpa a cor
 		if (piece == null) {
-			System.out.print("-"); // caso a posição da peça não exista, imprima um "risquinho".
+			System.out.print("-" + ANSI_RESET); // caso a posição da peça não exista, imprima um "risquinho".
 			
 		/*} else {
 			System.out.print(piece); // caso a posição da peça exista, imprima a peça.
