@@ -8,11 +8,24 @@ import chess.pieces.Rook;
 
 public class ChessMatch {
 	
+	
+	private int turn;
+	private Color currentPlayer;
 	private Board board;//associando uma partida de xadrez a um tabuleiro, pois uma partida de Xadrex tem que ter um tabuleiro(composição)
 	
 	public ChessMatch() {
 		board = new Board(8, 8); //quem tem que saber a dimensão de um tabuleiro de Xadrez, é classe resposável pelas regras do jogo, que no caso é essa. Dimensão do tabuleiro é 8x8.
+		turn = 1; //o turno no início da partida vale um.
+		currentPlayer = Color.WHITE; //a peça que começa no xadrez é a peça branca, então no primeiro turno será uma peça branca a mover primeiro
 		initialSetup();//quando se é criada uma nova partida de Xadrez (ChessMatch), se cria um tabuleiro 8x8 e chama o método InitialSetup().
+	}
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 	
 	public ChessPiece[][] getPieces(){ //método para retornar uma matriz de peças de Xadrez correspondentes a esta partida.
@@ -39,6 +52,7 @@ public class ChessMatch {
 		validateSourcePosition(source);//operação responsável por verificar se existe a posição de origem, caso não exista, lançará uma excessão
 		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);//
+		nextTurn();//esse método é chamado aqui pois se troca o turno após uma jogada
 		return (ChessPiece) capturedPiece; //o DownCasting foi feito pois a capturedPiece era do tipo Piece 
 	}
 	
@@ -52,10 +66,14 @@ public class ChessMatch {
 	
 	private void validateSourcePosition(Position position){//validará se na posição de origem existe uma peça
 		if(!board.thereIsAPiece(position)) {//se não existir uma peça nessa posição eu lançarei uma exceção
-			throw new ChessException("There is no piece on source position."); //não existe peça na posição de origem
+			throw new ChessException("There is no piece on source position."); //não existe peça na posição de origem//
+		}
+		/*exceção para caso o jogador esteja tentando mover uma peça adversária*/
+		if(currentPlayer != ((ChessPiece) board.piece(position)).getColor()) {//eu pego a peça do tabuleiro na certa posição, faço o downcasting para ChessPiece pois o getColor é uma propriedade da classe, e o a classe Piece é uma classe mais genérica
+			throw new ChessException("The chosen piece is not yours"); //a peça escolhida não é sua//
 		}
 		if(!board.piece(position).isThereAnyPossibleMove()) { //se não tiver nenhum movimento possível
-			throw new ChessException("There is no possible moves for the chosen piece"); //não existe movimento possíveis para a peça escolhida
+			throw new ChessException("There is no possible moves for the chosen piece"); //não existe movimento possíveis para a peça escolhida//
 		}
 	}
 	
@@ -63,6 +81,12 @@ public class ChessMatch {
 		if(!board.piece(source).possibleMove(target)) { //se pra peça de origem, a posição de destino não é um movimento possível
 			throw new ChessException("The chosen piece can't move to target position"); //a peça escolhida não pode se mover pra posição de destino
 		}
+	}
+	
+	private void nextTurn() { //método que troca de turno
+		turn++; //incrementação do turno. Turno um passa para o turno dois, e assim por diante
+		/*Expressão condicional ternária para mudar a cor da peça a cada turno, se no turno um foi a branca que jogou, no turno dois terá que ser a preta a jogar....*/
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE; //(se o jogador atual for igual a branco) ? então agora ele vai ser o preto : caso contrário vai ser o branco
 	}
 	
 	//método que vai receber as coordenadas do Xadrez

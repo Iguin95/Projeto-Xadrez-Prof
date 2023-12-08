@@ -18,7 +18,8 @@ public class Program {
 		while (true) {
 			try {
 				UI.clearScreen(); //a cada vez que rodar o loop, a tela será limpa
-				UI.printBoard(chessMatch.getPieces());//instancia o interface do tabuleiro
+				UI.printMatch(chessMatch);//vai chamar a partida agora
+				//UI.printBoard(chessMatch.getPieces());//instancia o interface do tabuleiro
 				System.out.println();
 				System.out.print("Source: ");
 				ChessPosition source = UI.readChessPosition(sc); //vai ler do usuário a posição de origem
