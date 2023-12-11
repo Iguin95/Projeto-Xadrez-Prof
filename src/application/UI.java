@@ -1,7 +1,10 @@
 package application;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import chess.ChessMatch;
 import chess.ChessPiece;
@@ -55,8 +58,10 @@ public class UI {
 		}
 	}
 	
-	public static void printMatch(ChessMatch chessMatch) {//método que vai imprimir a partida
+	public static void printMatch(ChessMatch chessMatch, List<ChessPiece> captured) {//método que vai imprimir a partida
 		printBoard(chessMatch.getPieces()); //vai imprimir o tabuleiro
+		System.out.println();
+		printCapturedPiece(captured); //depois que o tabuleiro é impresso, será imprimido as peças capturadas
 		System.out.println();
 		System.out.println("Turn : " + chessMatch.getTurn());
 		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer()); //estou aguardado o jogador da cor ... (WHITE/BLACK)
@@ -109,6 +114,20 @@ public class UI {
 			}
 		}
 		System.out.print(" "); // espaço em branco para que as peças não fiquem grudadas umas nas outras.
+	}
+	
+	private static void printCapturedPiece(List<ChessPiece> captured) { //método responsável por imprimir na tela uma lista de peças capturadas
+		List<ChessPiece> white = captured.stream().filter(x -> x.getColor() == Color.WHITE).collect(Collectors.toList()); //Expressão Lambda: Dentro do 'filter()' há um predicado, o predicado vai pegar um elemento da lista 'x'e vai verificar a condição desse elemento 'x' que no caso é a cor da peça (nesse está verificando se a cor é Branca)
+		List<ChessPiece> black = captured.stream().filter(x -> x.getColor() == Color.BLACK).collect(Collectors.toList());// Vai filtrar a cor das peças pretas
+		System.out.println("Captured pieces:");
+		System.out.print("White: ");
+		System.out.println(ANSI_WHITE); //Vai garantir que imprima na cor branca
+		System.out.println(Arrays.toString(white.toArray())); //Macete do Java: jeito padrão para imprimir um array de valores
+		System.out.println(ANSI_RESET);
+		System.out.print("Black: ");
+		System.out.println(ANSI_YELLOW); //Vai garantir que imprima na cor branca
+		System.out.println(Arrays.toString(white.toArray())); //Macete do Java: jeito padrão para imprimir um array de valores
+		System.out.println(ANSI_RESET);
 	}
 
 }

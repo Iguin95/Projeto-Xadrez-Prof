@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
@@ -12,6 +15,9 @@ public class ChessMatch {
 	private int turn;
 	private Color currentPlayer;
 	private Board board;//associando uma partida de xadrez a um tabuleiro, pois uma partida de Xadrex tem que ter um tabuleiro(composição)
+	
+	private List<Piece> piecesOnTheBoard = new ArrayList<>(); //lista de peças no tabuleiro
+	private List<Piece> capturedPieces = new ArrayList<>(); //lista de peças capturadas
 	
 	public ChessMatch() {
 		board = new Board(8, 8); //quem tem que saber a dimensão de um tabuleiro de Xadrez, é classe resposável pelas regras do jogo, que no caso é essa. Dimensão do tabuleiro é 8x8.
@@ -60,6 +66,12 @@ public class ChessMatch {
 		Piece p = board.removePiece(source); //retirei a peça da sua posição de origem
 		Piece capturedPiece = board.removePiece(target); //eu vou remover a possível peça que está na posição de destino
 		board.placePiece(p, target);//colocará a peça a ser movida na posição de destino
+		
+		if(capturedPiece != null) { //se caso uma peça for capturada
+			piecesOnTheBoard.remove(capturedPiece); //eu retiro ela das peças que estão no tabuleiro
+			capturedPieces.add(capturedPiece); //e adciono a peça a lista de peças capturadas
+		}
+		
 		return capturedPiece;
 		
 	}
@@ -92,6 +104,7 @@ public class ChessMatch {
 	//método que vai receber as coordenadas do Xadrez
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition()); //vai receber como valor a posição do xadrez e vai converte-la para posição da matriz através da chamada do método 'toPosition()'
+        piecesOnTheBoard.add(piece); //sempre que eu for instanciar uma nova peça no meu jogo de xadrez, terei que colocar essa peça dentro da lista de peças do meu tabuleiro
 	}
 	
 	private void initialSetup() { //método responsável por iniciar a partida de Xadrez, colocando as peças no tabuleiro
