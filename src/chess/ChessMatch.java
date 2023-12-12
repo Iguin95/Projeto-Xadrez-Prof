@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -15,6 +16,7 @@ public class ChessMatch {
 	private int turn;
 	private Color currentPlayer;
 	private Board board;//associando uma partida de xadrez a um tabuleiro, pois uma partida de Xadrex tem que ter um tabuleiro(composição)
+	private boolean check; //propriedade que vai decidir se a peça está em cheque ou não
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>(); //lista de peças no tabuleiro
 	private List<Piece> capturedPieces = new ArrayList<>(); //lista de peças capturadas
@@ -23,6 +25,7 @@ public class ChessMatch {
 		board = new Board(8, 8); //quem tem que saber a dimensão de um tabuleiro de Xadrez, é classe resposável pelas regras do jogo, que no caso é essa. Dimensão do tabuleiro é 8x8.
 		turn = 1; //o turno no início da partida vale um.
 		currentPlayer = Color.WHITE; //a peça que começa no xadrez é a peça branca, então no primeiro turno será uma peça branca a mover primeiro
+		check = false; //uma propriedade booleana começa com false por padrão, coloquei-a no construtor apenas para enfatizar
 		initialSetup();//quando se é criada uma nova partida de Xadrez (ChessMatch), se cria um tabuleiro 8x8 e chama o método InitialSetup().
 	}
 	
@@ -32,6 +35,10 @@ public class ChessMatch {
 	
 	public Color getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public boolean getCheck() {
+		return check;
 	}
 	
 	public ChessPiece[][] getPieces(){ //método para retornar uma matriz de peças de Xadrez correspondentes a esta partida.
@@ -58,6 +65,15 @@ public class ChessMatch {
 		validateSourcePosition(source);//operação responsável por verificar se existe a posição de origem, caso não exista, lançará uma excessão
 		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);//
+		/*após o movimento, eu terei que verificar se esse movimento colocou o jogador em cheque*/
+		
+		if(testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece);
+			throw new ChessException("You can't pput yourself in check"); //você não pode se colocar em cheque//
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true : false; // (se o teste de cheque do oponente do currentPlayer está em cheque) ? vou dizer que minha partida está em cheque : se não, vou dizer que não está em cheque
+		
 		nextTurn();//esse método é chamado aqui pois se troca o turno após uma jogada
 		return (ChessPiece) capturedPiece; //o DownCasting foi feito pois a capturedPiece era do tipo Piece 
 	}
@@ -74,6 +90,19 @@ public class ChessMatch {
 		
 		return capturedPiece;
 		
+	}
+	
+	private void undoMove(Position source, Position target, Piece capturedPiece) { //método para desfazer o movimento, pois a pessoa não pode se colocar em cheque
+		/*A operação se resume em desfazer o que foi feito quando se move uma peça(Método makeMove)*/
+		
+		Piece p = board.removePiece(target);//tira a peça que eu movi para o destino
+		board.placePiece(p, source); //estou devolvendo a peça para a posição de origem
+		
+		if(capturedPiece != null) { //caso haja uma peça capturada
+			board.placePiece(capturedPiece, target);//está pegando a peça que foi capturada na posição de destino
+			capturedPieces.remove(capturedPiece); //vou remover a peça da lista de peças capturadas
+			piecesOnTheBoard.add(capturedPiece); //e vou colocar a peça capturada de volta no tabuleiro
+		}
 	}
 	
 	private void validateSourcePosition(Position position){//validará se na posição de origem existe uma peça
@@ -99,6 +128,34 @@ public class ChessMatch {
 		turn++; //incrementação do turno. Turno um passa para o turno dois, e assim por diante
 		/*Expressão condicional ternária para mudar a cor da peça a cada turno, se no turno um foi a branca que jogou, no turno dois terá que ser a preta a jogar....*/
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE; //(se o jogador atual for igual a branco) ? então agora ele vai ser o preto : caso contrário vai ser o branco
+	}
+	
+	private Color opponent(Color color) { //esse método vai retornar a cor do oponente da peça atual
+		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE; //(se a cor for igual a cor branca) ? retorne a cor preta : caso contrário retorne a cor branca
+	}
+	
+	private ChessPiece king(Color color) { //método para pesquisar em jogo, qual que é o rei da cor passada no parâmetro
+		
+		//já que quem tem a propriedade 'cor' é a classe 'ChessPiece' e estou percorrendo uma lista de peças no tabuleiro do tipo Piece (que é uma classe mais genérica), preciso fazer o downcasting para acessar o atributo de cor			                              
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList()); //vai filtrar uma cor, e se a cor da peça for a igual passada no parâmetro, vai pega-la 
+		for(Piece p : list) { //para cada peça(Piece) 'p' na minha lista 'list' faça...
+			if(p instanceof King){//se essas peça 'p' for uma instância de rei
+				return (ChessPiece)p;//vai retornar essa peça, ou seja, o rei
+			}
+		}
+		throw new IllegalStateException("There is no " + color + " king on the board"); //essa exceção não é para acontecer, então não é necessário trata-la, pois se ela ocorrer, o sistema está com algum problema que necessita de correção
+	}
+	//método que vai verificar se o rei está em cheque. Este método vai percorrer todas as peças adversárias e averiguar qual delas está com o destino caindo na posição onde está o rei
+	private boolean testCheck(Color color) { //o argumento é cor pois estou testando se o rei dessa cor está em cheque
+		Position kingPosition = king(color).getChessPosition().toPosition(); //estou pegando a posição do meu rei em formato de matriz
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList()); //método que vai pegar lista de peças do oponente, ou seja, a cor de todos os oponentes do rei
+		for(Piece p : opponentPieces) { //para cada peça 'p', na minha lista de peças do oponente, vou ter que verificar se existe algum movimento possível que leva a posição do meu rei
+			boolean[][] mat = p.possibleMoves(); //matriz de movimentos possíveis dessa peça adversária 'p'
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) { //se nessa matriz acima, a posição correspondente a posição do rei, for true, significa que o rei está em cheque.
+				return true;
+			}
+		}
+		return false; //se esgotar a verificação da lista de oponentes e nenhum deles está dando cheque no rei, retornará falso, ou seja, o rei não está em cheque
 	}
 	
 	//método que vai receber as coordenadas do Xadrez

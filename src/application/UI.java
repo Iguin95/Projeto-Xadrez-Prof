@@ -65,6 +65,9 @@ public class UI {
 		System.out.println();
 		System.out.println("Turn : " + chessMatch.getTurn());
 		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer()); //estou aguardado o jogador da cor ... (WHITE/BLACK)
+		if(chessMatch.getCheck()) { //vai imprimir para o usuário caso ele esteja em cheque
+			System.out.println("CHECK!");
+		}
 	}
 	
 	

@@ -17,6 +17,10 @@ public abstract class ChessPiece extends Piece {
 	public Color getColor() { //Somente o 'get' ´pois não posso deixar a cor de uma peça ser modificada
 		return color;
 	}
+	
+	public ChessPosition getChessPosition() { //o meu programa não pode ter acesso a posição de matriz da peça já que também ela está definida com protected na Classe 'Piece'. O programa terá acesso a posição de xadrez através deste método 
+		return ChessPosition.fromPosition(position);
+	}
 
 	//a próxima operação vai ficar nesta classe abstrata pois ela seráe reaproveitada para todas as outras peças
 	
