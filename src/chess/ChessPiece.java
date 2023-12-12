@@ -7,6 +7,7 @@ import boardgame.Position;
 public abstract class ChessPiece extends Piece {
 	
 	private Color color;
+	private int moveCount;
 
 	public ChessPiece(Board board, Color color) {
 		super(board); //repassa a chamada para o construtor da super classe(class Piece)
@@ -16,6 +17,18 @@ public abstract class ChessPiece extends Piece {
 
 	public Color getColor() { //Somente o 'get' ´pois não posso deixar a cor de uma peça ser modificada
 		return color;
+	}
+	
+	public int getMoveCount() {
+		return moveCount;
+	}
+	
+	public void increaseMoveCount() {
+		moveCount++;
+	}
+	
+	public void decreaseMoveCount() {
+		moveCount--;
 	}
 	
 	public ChessPosition getChessPosition() { //o meu programa não pode ter acesso a posição de matriz da peça já que também ela está definida com protected na Classe 'Piece'. O programa terá acesso a posição de xadrez através deste método 
