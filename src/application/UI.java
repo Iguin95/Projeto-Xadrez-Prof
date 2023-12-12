@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+
 import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
@@ -64,9 +65,15 @@ public class UI {
 		printCapturedPiece(captured); //depois que o tabuleiro é impresso, será imprimido as peças capturadas
 		System.out.println();
 		System.out.println("Turn : " + chessMatch.getTurn());
-		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer()); //estou aguardado o jogador da cor ... (WHITE/BLACK)
-		if(chessMatch.getCheck()) { //vai imprimir para o usuário caso ele esteja em cheque
-			System.out.println("CHECK!");
+		if(!chessMatch.getCheckMate()) {
+			System.out.println("Waiting player: " + chessMatch.getCurrentPlayer()); //estou aguardado o jogador da cor ... (WHITE/BLACK)
+			if(chessMatch.getCheck()) { //vai imprimir para o usuário caso ele esteja em cheque
+				System.out.println("CHECK!");
+			}
+		}
+		else {
+			System.out.println("CHECKAMTE!");
+			System.out.println("Winner: " + chessMatch.getCurrentPlayer());	
 		}
 	}
 	

@@ -19,7 +19,7 @@ public class Program {
 		List<ChessPiece> captured = new ArrayList<>();
 
 		
-		while (true) {
+		while (!chessMatch.getCheckMate()) { //enquanto minha partida não estiver em xeque-mate, faça...
 			try {
 				UI.clearScreen(); //a cada vez que rodar o loop, a tela será limpa
 				UI.printMatch(chessMatch, captured);//vai chamar a partida agora
@@ -51,8 +51,10 @@ public class Program {
 				sc.nextLine();
 			}
 		}
-
 		
+		UI.clearScreen();
+		UI.printMatch(chessMatch, captured); //quando o While falhar, ou seja, quando houver um xeque-mate, vai imprimir a partida do jeito que está no final
+	
 	}
 
 }
