@@ -13,7 +13,7 @@ import chess.ChessPosition;
 public class Program {
 
 	public static void main(String[] args) {
-
+		//Igor
 		Scanner sc = new Scanner(System.in);
 		ChessMatch chessMatch = new ChessMatch(); //instancia a partida de xadrez
 		List<ChessPiece> captured = new ArrayList<>();
